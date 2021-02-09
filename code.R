@@ -119,6 +119,7 @@ install.packages("UsingR")
 library(UsingR)
 x=father.son$fheight
 x
+View(x)
 length(x)
 
 round(sample(x,20),1)
@@ -127,24 +128,41 @@ sample(x,20)
 hist(x,breaks = seq(floor(min(x)),ceiling(max(x))),
     main="Height histgram",xlab="Height in inches")
 hist(x,20)
+hist(x,breaks=20)
 seq(floor(min(x)),ceiling(max(x)))
 
 sum(x>=65 &x<=75)
 
 xs<-seq(floor(min(x)),ceiling(max(x)),0.1)
 xs
+
 plot(xs,ecdf(x)(xs),type="l",
      xlab="Height in inches",ylab="F(x)")
 
-plot(x)
+plot(xs,ecdf(x)(xs),
+     xlab="Height in inches",ylab="F(x)")
+
+plot(x,ecdf(x)(x))
+
+plot(ecdf(x))
+
+plot(x,type="l")
 
 
-##---------------------------------------------------
+# QQ-plot
 mean(x)
-mean(x>70)
-1-pnorm(70,mean(x),sd(x))
-------------------#sd means standard deviation
-#sqrt(9)
+
+sd(x)
+#sd means standard deviation
+
+a<-mean(x>70)
+a
+b<-1-pnorm(70,mean(x),sd(x))
+b
+
+#if a and b continuously agree(10,12,23,80,90...), normal distribution
+
+#sqrt(9)=3
 #sd=sqrt(variance)
 
 mean(x<70)
@@ -156,18 +174,20 @@ pnorm(59,mean(x),sd(x))
 mean(x<79)
 pnorm(79,mean(x),sd(x))
 
-##---------------------------------------------------
 ps<-seq(0.01,0.99,0.01)
+ps
+#seq 
 qs<-quantile(x,ps)
 qs
+quantile(x)
+
 normalqs<-qnorm(ps,mean(x),sd(x))
 plot(normalqs,qs,xlab="Normal percentiles",ylab="Height")
-abline(0,1) ##identity line
+abline(0,1,col="blue")  ##identity line
 
-##learning abline function in R
+## abline function in R
 ##http://www.sthda.com/english/wiki/abline-r-function-an-easy-way-to-add-straight-lines-to-a-plot-using-r-software
 plot(cars)
-View(cars)
 abline(v=15,col="blue")
 abline(h=c(40,80),col=c("blue","red"),lty=c(1,2),lwd=c(1,3))
 ##third example
@@ -188,56 +208,76 @@ eq = paste0("y = ", round(coeff[2],1), "*x ", round(coeff[1],1))
 plot(cars, main=eq)
 abline(reg, col="blue") #????????????? not understand
 
-##----------------------------------------------------
+##
 qqnorm(x)
 qqline(x)
 
 
-##---------------------------------------------------
+##-------------------------------
 QQ-plot Exercises
 
 load("skew.RData")
 dim(dat)
 qqnorm(dat)
+
 par(mfrow=c(3,3))
+
 for(i in 1:9)
   qqnorm(dat)
-## what the hell is the qqnorm? 
+
+for (variable in vector) {
+  
+}
+
+
+## the qqnorm? 
 ##http://www.sthda.com/english/wiki/qq-plots-quantile-quantile-plots-r-base-graphs
 dat<-ToothGrowth
 dat
 qqnorm(dat$len,pch=1,frame=FALSE)
 qqline(dat$len,col="steelblue",lwd=2)
 
+
 ##---------------------------
 for (i in 1:9) {
   qqnorm(dat[,i])
   qqline(dat[,i])
 }
+
+hist(dat[,1])
+hist(dat[,2])
 hist(dat[,3])
 hist(dat[,4])
+hist(dat[,5])
+hist(dat[,6])
+hist(dat[,7])
+hist(dat[,8])
 hist(dat[,9])
+
 par(mfrow=c(1,1))
 
 
-##------------------------------------------------------
+##----------------------------------
+# Boxplot
 data(exec.pay)
 hist(exec.pay)
 qqnorm(exec.pay)
 qqline(exec.pay)
 
-##------------------------------------------------------
+mean(exec.pay)
+median(exec.pay)
+
+##------------------------------------
 boxplot(exec.pay,ylab="10,000s of dollars",ylim=c(0,400))
 
-
-##------------------------------------------------------
 head(InsectSprays)
 View(InsectSprays)
 
 boxplot(InsectSprays$count ~ InsectSprays$spray)
+
 boxplot(count ~ spray, data = InsectSprays)
 
-##
+## boxplot
 View(airquality)
 boxplot(Temp~Month,
         data=airquality,
@@ -251,19 +291,40 @@ boxplot(Temp~Month,
 ##------------------------------------------------
 library(UsingR)
 dat<-nym.2002
+dat
 
 library(dplyr)
 data(nym.2002, package="UsingR")
 
 head(dat)
+
 boxplot(time~gender,data=dat)
 qqnorm(dat$time)
 hist(dat$time,30)
 
 #
 #pp<-filter(dat,Diet=="hf")
-male<-filter(dat,gender="Male")
-hist(male$time)
+male<-filter(dat,gender=="Male") %>% select(time) %>% unlist
+# have to library(dplyr) first
+hist(male)
+abline(v=mean(male))
+
+female<-filter(dat,gender=="Female")%>%select(time)%>%unlist
+hist(female)
+abline(v=mean(female))
+
+#
+mypar(1,3)
+males <- filter(nym.2002, gender=="Male") %>% select(time) %>% unlist
+females <- filter(nym.2002, gender=="Female") %>% select(time) %>% unlist
+boxplot(females, males)
+hist(females,xlim=c(range( nym.2002$time)))
+hist(males,xlim=c(range( nym.2002$time)))
+
+
+### end of week one ###
+
+
 
 #
 par(mfrow=c(3,3))
