@@ -1,1 +1,2 @@
-edX Statistics-and-R
+# edX Statistics-and-R
+# Ubuntu Rstudio
