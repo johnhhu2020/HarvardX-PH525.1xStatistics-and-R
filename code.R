@@ -139,6 +139,8 @@ xs
 plot(xs,ecdf(x)(xs),type="l",
      xlab="Height in inches",ylab="F(x)")
 
+#---------------------------------------------------------^^
+
 plot(xs,ecdf(x)(xs),
      xlab="Height in inches",ylab="F(x)")
 
@@ -147,6 +149,7 @@ plot(x,ecdf(x)(x))
 plot(ecdf(x))
 
 plot(x,type="l")
+## random_variables-----------------
 
 
 # QQ-plot
@@ -377,10 +380,11 @@ qqline(dat$len,lwd=2)
 
 
 
+
 ##  Week 2
 ##-----------------------------------------------------------
 library(dplyr)
-dat<-read.csv("femaleMiceWeight.csv")
+dat<-read.csv("femaleMiceWeights.csv")
 dat
 
 control<-filter(dat,Diet=="chow") %>% select(Bodyweight) %>% unlist
@@ -389,3 +393,131 @@ treatment<-filter(dat,Diet=="hf")%>%select(Bodyweight)%>%unlist
 mean(control)
 mean(treatment)
 
+population<-read.csv("femaleControlsPopulation.csv")
+population
+population<-unlist(population)
+population
+
+sample(population,12)
+mean(sample(population,12))
+
+
+##---------------------
+library(downloader) 
+url <- "https://raw.githubusercontent.com/genomicsclass/dagdata/master/inst/extdata/femaleControlsPopulation.csv"
+filename <- basename(url)
+download(url, destfile=filename)
+x <- unlist( read.csv(filename) )
+
+x<-read.csv("femaleControlsPopulation.csv")%>%unlist
+x
+mean(x)
+
+set.seed(1)
+dat<-sample(x,5)
+dat
+abs(dat)
+
+abs(mean(x)-mean(dat))
+
+set.seed(1)
+X <- sample(x,5)
+abs( mean(X) - mean(x) )
+
+set.seed(5)
+p<-sample(x,5)
+p
+abs(mean(p)-mean(x))
+
+set.seed(1)
+
+n <- 10000
+null <- vector("numeric",n)
+for (i in 1:n) {
+  control <- sample(population,12)
+  treatment <- sample(population,12)
+  null[i] <- mean(treatment) - mean(control)
+}
+max(null)
+null
+hist(null,30)
+
+
+library(dplyr)
+dat<-read.csv("femaleMiceWeights.csv")
+control<-filter(dat,Diet=="chow")%>%select(Bodyweight)%>%unlist
+treatment<-filter(dat,Diet=="hf")%>%select(Bodyweight)%>%unlist
+mean(control)
+mean(treatment)
+obsdiff<-mean(treatment)-mean(control)
+obsdiff
+
+mean(null >= obsdiff)
+
+
+# Cumulative Distribution Function
+smallest <- floor( min(x) )
+largest <- ceiling( max(x) )
+values <- seq(smallest, largest,len=300)
+heightecdf <- ecdf(x)
+ecdf(x)
+x
+values
+heightecdf
+View(heightecdf)
+plot(values, heightecdf(values), type="l",
+     xlab="a (Height in inches)",ylab="Pr(x <= a)")
+
+
+##--------------------------
+#Probability Distribution
+n <- 100
+library(rafalib)
+nullplot(-5,5,1,30, xlab="Observed differences (grams)", ylab="Frequency")
+
+totals <- vector("numeric",11)
+for (i in 1:n) {
+  control <- sample(population,12)
+  treatment <- sample(population,12)
+  nulldiff <- mean(treatment) - mean(control)
+  j <- pmax(pmin(round(nulldiff)+6,11),1)
+  totals[j] <- totals[j]+1
+  text(j-6,totals[j],pch=15,round(nulldiff,1))
+  ##if(i < 15) Sys.sleep(1) ##You can add this line to see values appear slowly
+}
+
+hist(null, freq=TRUE)
+abline(v=obsdiff, col="red", lwd=2)
+
+sum(null>obsdiff)/n
+mean(null>obsdiff)
+mean(abs(null)>obsdiff)  ## P value 
+
+
+##-----------------------
+library(dplyr)
+population<-read.csv("femaleControlsPopulation.csv") %>% unlist
+
+set.seed(1)
+n<-1000
+null<-vector("numeric",n)
+for (i in 1:n) {
+  sample<-sample(population,5)
+  null[i]<-mean(sample)
+}
+
+mean(abs(null)-mean(population)>1)/n
+
+sum(abs(null)-mean(population)>1)/n  ##
+
+
+mean(abs(null-mean(population)))
+
+mean(abs(null-mean(population))>1)  ##
+
+
+sum(null-sample>1)/n
+
+sum(abs(null-mean(population))>1)/n  ##
+
+mean(population)-mean(sample)
