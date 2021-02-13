@@ -33,10 +33,8 @@ x<-1:10
 y<-rnorm(10)
 plot(x,y)
 fit<-lm(y~x)
+fit
 
-
-##
-dat<-read.csv("femaleMiceWeights.csv")
 
 ##
 dat<-read.csv("femaleMiceWeights.csv")
@@ -96,6 +94,7 @@ nrow(dat)
 dat<-filter(dat,order=="Primates")%>%select(sleep_total)
 dat
 
+dat<-read.csv("msleep_ggplot2.csv")
 dat<-filter(dat,order=="Primates")%>%select(sleep_total)%>%unlist
 dat
 
@@ -132,14 +131,16 @@ hist(x,breaks=20)
 seq(floor(min(x)),ceiling(max(x)))
 
 sum(x>=65 &x<=75)
+sum(x>65 & x<75)/length(x)          ##
+## proportion ??
 
 xs<-seq(floor(min(x)),ceiling(max(x)),0.1)
 xs
 
 plot(xs,ecdf(x)(xs),type="l",
-     xlab="Height in inches",ylab="F(x)")
+     xlab="Height in inches",ylab="F(x)")          ##
 
-#---------------------------------------------------------^^
+
 
 plot(xs,ecdf(x)(xs),
      xlab="Height in inches",ylab="F(x)")
@@ -521,3 +522,185 @@ sum(null-sample>1)/n
 sum(abs(null-mean(population))>1)/n  ##
 
 mean(population)-mean(sample)
+
+
+
+##---------------
+library(dplyr)
+population<-read.csv("femaleControlsPopulation.csv") %>% unlist
+
+set.seed(1)
+n<-10000
+null<-vector("numeric",n)
+for (i in 1:n) {
+  sample<-sample(population,5)
+  null[i]<-mean(sample)
+}
+
+sum(abs(null-mean(population))>1)/n
+
+
+
+##-------------------
+
+install.packages("gapminder")
+library(gapminder)
+data(gapminder)
+head(gapminder)
+count(gapminder)
+
+i952<-filter(gapminder,year=="1952")
+count(i952)
+i952h<-select(i952,lifeExp) %>% unlist
+plot(i952h)
+abline(v=6)
+
+mean(i952h<=40)
+
+##----
+library(gapminder)
+data(gapminder)
+dat1952 = gapminder[ gapminder$year == 1952, ]
+x = dat1952$lifeExp
+mean(x <= 40)
+x
+
+
+prop=fuction(q) {
+  mean(x)
+  qs=seq(form=min(x),to=max(x),length=20)
+  props=sapply(qs,prop)
+  plot(qs,props)
+  props=sapply(qs,function(q) mean(x<=q))
+  plot(ecdf(x))
+  }
+
+
+
+
+##
+dat1952 = gapminder[ gapminder$year == 1952, ]
+x = dat1952$lifeExp
+mean(x <= 40)
+
+prop=function(q) {
+  mean(x<=q)
+}
+
+qs=seq(min(x),max(x),length=200)
+
+props=sapply(qs,prop)
+
+plot(qs,props)
+
+props=sapply(qs,function(q) mean(x<=q))
+
+plot(ecdf(x))
+
+
+
+null<-vector("numeric",) 
+
+
+##----------------------------
+library(dplyr)
+x<-read.csv("femaleControlsPopulation.csv") %>% unlist
+
+# make averages5
+set.seed(1)
+n <- 1000
+averages5 <- vector("numeric",n)
+for(i in 1:n){
+  X <- sample(x,5)
+  averages5[i] <- mean(X)
+}
+
+plot(averages5)
+boxplot(averages5)
+plot(ecdf(averages5))
+hist(averages5)
+
+
+# make averages50
+set.seed(1)
+n <- 1000
+averages50 <- vector("numeric",n)
+for(i in 1:n){
+  X <- sample(x,50)
+  averages50[i] <- mean(X)
+}
+plot(averages50)
+boxplot(averages50)
+plot(ecdf(averages50))
+hist(averages50)
+
+# proportion
+sum(averages50>23 & averages50<25)/length(averages50)
+
+#
+mean( averages50 < 25 & averages50 > 23)
+
+
+
+##    trying this S curve plot    ##
+smallest <- floor( min(x) )
+largest <- ceiling( max(x) )
+values <- seq(smallest, largest,len=300)
+heightecdf <- ecdf(x)
+plot(values, heightecdf(values), type="l",
+     xlab="a (Height in inches)",ylab="Pr(x <= a)")
+
+
+## propotion ##
+pnorm(25,mean(averages50),sd(averages50))-pnorm(23,mean(averages50),sd(averages50))
+
+#
+pnorm( (25-23.9) / 0.43)  - pnorm( (23-23.9) / 0.43) 
+
+
+##--------------------
+dat<-read.csv("mice_pheno.csv")
+dat
+dat<-na.omit(dat)
+dat
+
+library(dplyr)
+#treatment<-filter(dat,Diet=="hf")%>%select(Bodyweight)%>%unlist
+populationx<-filter(dat,Diet=="chow"& Sex=="F") %>% select(Bodyweight) %>% unlist
+populationx
+mean(populationx)
+
+library(rafalib)
+popsd(populationx)
+
+#
+set.seed(2)
+samplex<-sample(populationx,25)
+mean(samplex)
+
+
+populationy<- filter(dat, Sex=="F" & Diet=="hf") %>% select(Bodyweight) %>% unlist
+mean(populationy)
+popsd(populationy)
+
+set.seed(2)
+sampley<-sample(populationy,25)
+mean(sampley)
+
+
+a<-abs(mean(populationx)-mean(populationy))
+b<-abs(mean(samplex)-mean(sampley))
+a<-mean(populationx)-mean(populationy)
+b<-mean(samplex)-mean(sampley)
+
+abs(a-b)
+
+a<-mean(populationy)-mean(populationx)
+b<-mean(sampley)-mean(samplex)
+
+abs(a-b)
+
+# be careful on mistyping
+
+
+
